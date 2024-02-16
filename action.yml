@@ -1,20 +1,55 @@
-name: Composite action template
+name: Get Current Pull Request
 description: |
-  This action does nothing meaningful.
+  This action gets the current pull request. See the README.md for more details.
 
-inputs:
-  example-input:
-    description: A useless input as an example
-    required: true
 outputs:
-  example-output:
-    description: You know it.
-    value: ${{ steps.generate-output.outputs.example-output }}
+  id:
+    description: The pull request ID.
+    value: ${{ steps.parse-outputs.outputs.id }}
+  json:
+    description: The pull request JSON payload.
+    value: ${{ steps.parse-outputs.outputs.json }}
+  number:
+    description: The pull request number.
+    value: ${{ steps.parse-outputs.outputs.number }}
+  url:
+    description: The pull request URL.
+    value: ${{ steps.parse-outputs.outputs.url }}
+
 runs:
   using: "composite"
   steps:
-    - run: echo "here is your input :${{ inputs.example-input }}."
+    - name: Find pull request
+      id: find-pr
       shell: bash
-    - id: generate-output
-      run: echo "example-output=here is your output"
+      run: |
+        event_pull_request=$(cat "${GITHUB_EVENT_PATH}" | jq '.pull_request' -c)
+        
+        if test -n "${event_pull_request}" && test "${event_pull_request}" != "null"; then
+          echo "pull-request=${event_pull_request}" >> ${GITHUB_OUTPUT}
+          exit 0
+        fi
+        
+        # This returns a non 0 status code when the commit doesn't exist, and null when no PRs would match.
+        pull_requests=$(GH_TOKEN=${{ github.token }} gh api /repos/${{ github.repository }}/commits/${{ github.sha }}/pulls)
+        
+        if test "$pull_requests" = "null" || test $(echo "${pull_requests}" | jq length) -eq 0; then
+          echo "::error::No matching pull request could be found for commit ${{ github.sha }}!"
+          exit 1
+        fi
+        
+        latest_pull_request=$(echo "$pull_requests" | jq -c 'sort_by(.updated_at) | reverse[0]')
+        echo "pull-request=${latest_pull_request}" >> ${GITHUB_OUTPUT}
+    - name: Parse outputs
+      id: parse-outputs
       shell: bash
+      run: |
+        pull_request='${{ steps.find-pr.outputs.pull-request }}'
+        id=$(echo "$pull_request" | jq -r '.id')
+        number=$(echo "$pull_request" | jq -r '.number')
+        url=$(echo "$pull_request" | jq -r '.url')
+        
+        echo "id=${id}" >> ${GITHUB_OUTPUT}
+        echo "json=${pull_request}" >> ${GITHUB_OUTPUT}
+        echo "number=${number}" >> ${GITHUB_OUTPUT}
+        echo "url=${url}" >> ${GITHUB_OUTPUT}
