@@ -42,9 +42,11 @@ runs:
         echo "pull-request=${latest_pull_request}" >> ${GITHUB_OUTPUT}
     - name: Parse outputs
       id: parse-outputs
+      env:
+        PULL_REQUEST: ${{ steps.find-pr.outputs.pull-request }}
       shell: bash
       run: |
-        pull_request='${{ steps.find-pr.outputs.pull-request }}'
+        pull_request="${PULL_REQUEST}"
         id=$(echo "$pull_request" | jq -r '.id')
         number=$(echo "$pull_request" | jq -r '.number')
         url=$(echo "$pull_request" | jq -r '.url')
