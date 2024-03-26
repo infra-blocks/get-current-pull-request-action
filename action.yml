@@ -23,6 +23,10 @@ runs:
       id: find-pr
       shell: bash
       run: |
+        if test "${{ runner.debug }}" = "1"; then
+          set -x
+        fi
+        
         event_pull_request=$(cat "${GITHUB_EVENT_PATH}" | jq '.pull_request' -c)
         
         if test -n "${event_pull_request}" && test "${event_pull_request}" != "null"; then
@@ -46,6 +50,10 @@ runs:
         PULL_REQUEST: ${{ steps.find-pr.outputs.pull-request }}
       shell: bash
       run: |
+        if test "${{ runner.debug }}" = "1"; then
+          set -x
+        fi
+        
         pull_request="${PULL_REQUEST}"
         id=$(echo "$pull_request" | jq -r '.id')
         number=$(echo "$pull_request" | jq -r '.number')
