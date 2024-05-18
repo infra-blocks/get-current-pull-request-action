@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 # get-current-pull-request-action
 [![Release](https://github.com/infra-blocks/composite-action-template/actions/workflows/git-tag-semver-from-label.yml/badge.svg)](https://github.com/infra-blocks/composite-action-template/actions/workflows/git-tag-semver-from-label.yml)
 [![Self Test](https://github.com/infra-blocks/composite-action-template/actions/workflows/self-test.yml/badge.svg)](https://github.com/infra-blocks/composite-action-template/actions/workflows/self-test.yml)
 [![Update From Template](https://github.com/infra-blocks/get-current-pull-request-action/actions/workflows/update-from-template.yml/badge.svg)](https://github.com/infra-blocks/get-current-pull-request-action/actions/workflows/update-from-template.yml)
+=======
+# composite-action-template
+[![Release](https://github.com/infra-blocks/composite-action-template/actions/workflows/git-tag-semver-from-label.yml/badge.svg)](https://github.com/infra-blocks/composite-action-template/actions/workflows/git-tag-semver-from-label.yml)
+[![Self Test](https://github.com/infra-blocks/composite-action-template/actions/workflows/self-test.yml/badge.svg)](https://github.com/infra-blocks/composite-action-template/actions/workflows/self-test.yml)
+[![Update Template Instances](https://github.com/infra-blocks/composite-action-template/actions/workflows/trigger-update-from-template.yml/badge.svg)](https://github.com/infra-blocks/composite-action-template/actions/workflows/trigger-update-from-template.yml)
+>>>>>>> template/master
 
 This GitHub Action gets the current pull request from the context. It returns the `${{ github.event.pull_request }}`
 field when it is defined. Otherwise, it uses the [GitHub API](https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#list-pull-requests-associated-with-a-commit)
@@ -44,8 +51,12 @@ jobs:
   my-job:
     runs-on: ubuntu-22.04
     steps:
+<<<<<<< HEAD
       - id: current-pr
         uses: infra-blocks/get-current-pull-request-action@v1
       - run: |
           echo "Hello from PR #${{ steps.current-pr.outputs.number }}"
+=======
+      - uses: infra-blocks/composite-action-template@v1
+>>>>>>> template/master
 ```
