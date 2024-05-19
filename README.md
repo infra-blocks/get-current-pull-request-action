@@ -44,12 +44,8 @@ jobs:
   my-job:
     runs-on: ubuntu-22.04
     steps:
-<<<<<<< HEAD
       - id: current-pr
         uses: infra-blocks/get-current-pull-request-action@v1
       - run: |
           echo "Hello from PR #${{ steps.current-pr.outputs.number }}"
-=======
-      - uses: infra-blocks/composite-action-template@v1
->>>>>>> template/master
 ```
